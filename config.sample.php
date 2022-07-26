@@ -9,7 +9,7 @@ ini_set('display_errors', true);
 
 error_reporting(E_ALL);
 
-Config::set('URL', '/'); //Trailing slash is important
+Config::set('URL', 'https://localhost.unl.edu/'); //Trailing slash is important
 
 /**********************************************************************************************************************
  * DB related settings
@@ -29,6 +29,13 @@ Config::set('DB_NAME'     , 'sitemaster');
  * Other settings, including theme
  */
 Config::set('THEME', 'foundation');
+Config::set('RESTRICTED_URIS', array(
+    'http://events.unl.edu/',
+    'http://planetred.unl.edu/',
+    'http://validator.unl.edu/',
+    'http://listserv.unl.edu/',
+));
+Config::set('SITE_PASS_FAIL', true);
 
 
 /**********************************************************************************************************************
@@ -37,7 +44,11 @@ Config::set('THEME', 'foundation');
 Config::set('PLUGINS', array(
     'example' => array('setting'=>'value'),
     'theme_foundation' => array('setting'=>'value'),
-    'auth_google' => array('setting'=>'value'),
+    // 'auth_google' => array('setting'=>'value'),
+    'auth_unl' => array(),
+    'unl' => array(
+        'weight' => 40,
+    ),
 ));
 
 /**********************************************************************************************************************
@@ -55,6 +66,18 @@ Config::set('GROUPS', [
         //You can also set a few other settings on a group level
         //'SITE_PASS_FAIL' => false,
         //'SCAN_PAGE_LIMIT' => 5,
+    ],
+    'unl' => [
+        'MATCHING' => [
+            SiteMaster\Core\Registry\GroupHelper::generateDomainRegex('unl.edu'),
+        ],
+        'SITE_PASS_FAIL' => true,
+        //'SCAN_PAGE_LIMIT' => 5,
+        'METRICS' => [
+            'unl' => array(
+                'weight' => 20,
+            ),
+        ]
     ],
 ]);
 
@@ -88,3 +111,4 @@ if (getenv('TRAVIS')) {
     Config::set('TEST_DB_PASSWORD' , Config::get('DB_PASSWORD'));
     Config::set('TEST_DB_NAME'     , Config::get('DB_NAME'));
 }
+date_default_timezone_set('America/Chicago');
