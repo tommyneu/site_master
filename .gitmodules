@@ -4,3 +4,9 @@
 [submodule "vendor/unl_submodules/DB"]
 	path = vendor/unl_submodules/DB
 	url = https://github.com/unl/DB.git
+[submodule "plugins/auth_unl"]
+	path = plugins/auth_unl
+	url = https://github.com/unl/sitemaster_plugin_auth_unl.git
+[submodule "plugins/unl"]
+	path = plugins/unl
+	url = https://github.com/unl/sitemaster_plugin_unl.git
