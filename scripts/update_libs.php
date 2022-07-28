@@ -7,8 +7,8 @@ require_once(__DIR__ . "/../init.php");
 //1.  install all the default stuff.
 $pluginManager = \SiteMaster\Core\Plugin\PluginManager::getManager();
 
-echo '===== Installing libraries. =====' . PHP_EOL;
-echo 'This may take some time...' . PHP_EOL;
+// echo '===== Installing libraries. =====' . PHP_EOL;
+// echo 'This may take some time...' . PHP_EOL;
 
 //Update composer
 passthru('php ' . \SiteMaster\Core\Util::getRootDir() . '/composer.phar install -n');

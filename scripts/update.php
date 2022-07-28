@@ -22,7 +22,7 @@ function performPluginUpdate(\SiteMaster\Core\Plugin\PluginInterface $plugin)
     $checked[] = $name;
 
     if ($method = $plugin->getUpdateMethod()) {
-        echo 'Performing ' . $method . ' on ' . $plugin->getPluginType() . ' plugin: ' . $name . PHP_EOL;
+        // echo 'Performing ' . $method . ' on ' . $plugin->getPluginType() . ' plugin: ' . $name . PHP_EOL;
         return $plugin->performUpdate();
     }
 
