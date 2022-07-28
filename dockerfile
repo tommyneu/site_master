@@ -14,7 +14,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y mariadb-client \ 
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y git zip unzip chromium
+RUN apt-get update && apt-get install -y git zip unzip chromium xvfb
 
 RUN mkdir /etc/pki && mkdir /etc/pki/tls && openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/pki/tls/dkey.pem -out /etc/pki/tls/cert.pem -subj "/C=US/ST=Nebaska/L=Lincoln/O=UNL/CN=DOCKER" 
 
