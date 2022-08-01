@@ -11,6 +11,9 @@ error_reporting(E_ALL);
 
 Config::set('URL', 'https://localhost.unl.edu/'); //Trailing slash is important
 
+// If using docker
+// Config::set('URL', 'http://localhost.unl.edu:5502/'); //Trailing slash is important
+
 /**********************************************************************************************************************
  * DB related settings
  */
