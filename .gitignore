@@ -20,3 +20,5 @@ data/database.mwb.bak
 !/plugins/example
 !/plugins/metric_links
 !/plugins/theme_foundation
+!/plugins/auth_unl
+!/plugins/unl
