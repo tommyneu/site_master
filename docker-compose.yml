@@ -28,6 +28,7 @@ services:
     # Make sure all are the same
     ports:
       - "5502:80"
+      - "5443:443"
 
     depends_on:
       - db

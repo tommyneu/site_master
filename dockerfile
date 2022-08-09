@@ -16,8 +16,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 RUN apt-get update && apt-get install -y git zip unzip chromium xvfb
 
-RUN mkdir /etc/pki && mkdir /etc/pki/tls && openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/pki/tls/dkey.pem -out /etc/pki/tls/cert.pem -subj "/C=US/ST=Nebaska/L=Lincoln/O=UNL/CN=DOCKER" 
-
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Install php-mysql driver
@@ -26,8 +24,11 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# removes error "Invalid command 'RewriteEngine'"
-RUN a2enmod rewrite && service apache2 restart
+# this is for webaudit to run
+RUN mkdir /etc/pki && mkdir /etc/pki/tls && openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout /etc/pki/tls/dkey.pem -out /etc/pki/tls/cert.pem -subj "/C=US/ST=Nebaska/L=Lincoln/O=UNL/CN=app.localhost.unl.edu"
+
+# removes error "Invalid command 'RewriteEngine'" and allows ssl
+RUN a2enmod rewrite && a2enmod ssl && a2enmod socache_shmcb && service apache2 restart
 
 # changes the docroot so the domain points to the correct file
 ARG DIRROOT="/var/www/html"
@@ -35,6 +36,19 @@ ARG DOCROOT="/www"
 ENV APACHE_DOCUMENT_ROOT=${DIRROOT}${DOCROOT}
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# creates the the ssl certs and creates ENV vars to be used in the conf files
+ENV APACHE_SSL_KEY="/etc/ssl/private/apache-selfsigned.key"
+ENV APACHE_SSL_CRT="/etc/ssl/certs/apache-selfsigned.crt"
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${APACHE_SSL_KEY} -out ${APACHE_SSL_CRT} -subj "/C=US/ST=Nebaska/L=Lincoln/O=UNL/CN=app.localhost.unl.edu"
+
+# copies the conf files that apache will use
+# do not copy them to sites-enabled since sites-available have symlinks
+COPY apacheConf/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY apacheConf/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+
+# enables ssl site and checks config
+RUN a2ensite default-ssl.conf && apachectl configtest
 
 WORKDIR ${DIRROOT}
 
@@ -47,11 +61,3 @@ WORKDIR ${DIRROOT}
 # RUN npm install
 
 COPY . ${DIRROOT}
-
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
-
-# [Optional] Uncomment this line to install global node packages.
-# RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
-
